@@ -49,21 +49,41 @@
     setInterval(updateCounter, 1000);
     updateCounter();
     
-// floating hearts on click/tap
+  // Floating kisses animation
     document.addEventListener('click', (e) => {
-      const heart = document.createElement('div');
-      heart.textContent = ['💋'];
-      heart.style.position = 'fixed';
-      heart.style.left = e.clientX + 'px';
-      heart.style.top = e.clientY + 'px';
-      heart.style.fontSize = Math.random() * 20 + 25 + 'px';
-      heart.style.animation = 'floatUp 3s ease-out';
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 3000);
+      const kiss = document.createElement('div');
+      kiss.textContent = '💋';
+      kiss.style.position = 'fixed';
+      kiss.style.left = e.clientX + 'px';
+      kiss.style.top = e.clientY + 'px';
+      kiss.style.fontSize = '20px';
+      kiss.style.pointerEvents = 'none';
+      document.body.appendChild(kiss);
+
+      let size = 20; // initial size
+      let top = e.clientY;
+      let left = e.clientX;
+
+      function animate() {
+        size += 1.2; // grow rate
+        top -= 1;    // move up
+        kiss.style.fontSize = size + 'px';
+        kiss.style.top = top + 'px';
+        kiss.style.left = left + 'px';
+
+        if (size < 60) { // maximum size before removal
+          requestAnimationFrame(animate);
+        } else {
+          kiss.remove();
+        }
+      }
+
+      animate();
     });
   </script>
 </body>
 </html>
+
 
 
 
