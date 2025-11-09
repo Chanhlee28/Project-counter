@@ -39,29 +39,41 @@
     font-size: clamp(1rem, 3vw, 1.5rem);
   }
 
- .sparkle {
+ /* --- STAR SPARKLES --- */
+  .sparkle {
     position: fixed;
-    color: #fff;
     font-size: 18px;
-    text-shadow: 
-      0 0 6px #ff69b4, 
-      0 0 12px #ffb6c1, 
-      0 0 20px #ffffff;
-    opacity: 0.9;
+    color: #fff;
     pointer-events: none;
+    opacity: 0.9;
+    text-shadow:
+      0 0 6px #ff69b4,
+      0 0 12px #ffb6c1,
+      0 0 20px #ffffff;
+    animation:
+      twinkle 1.5s ease-in-out infinite alternate,
+      colorShift 3s linear infinite;
     transform: scale(1);
-    animation: twinkle 1.5s infinite ease-in-out alternate;
   }
 
+  /* twinkle motion (scaling + rotation) */
   @keyframes twinkle {
     from {
       transform: scale(0.7) rotate(0deg);
       opacity: 0.5;
     }
     to {
-      transform: scale(1.4) rotate(45deg);
+      transform: scale(1.5) rotate(45deg);
       opacity: 1;
     }
+  }
+
+  /* soft color cycling (white → pink → lilac → white) */
+  @keyframes colorShift {
+    0%   { color: #fff; text-shadow: 0 0 6px #ffffff, 0 0 12px #ffd6f5; }
+    33%  { color: #ffb6c1; text-shadow: 0 0 8px #ff69b4, 0 0 16px #ff8ad4; }
+    66%  { color: #dda0dd; text-shadow: 0 0 8px #ba55d3, 0 0 16px #d8b7ff; }
+    100% { color: #fff; text-shadow: 0 0 6px #ffffff, 0 0 12px #ffd6f5; }
   }
 </style>
 </head>
@@ -135,7 +147,7 @@
         animate();
       }
     });
-    function createSparkle() {
+ function createSparkle() {
     const sparkle = document.createElement('div');
     sparkle.className = 'sparkle';
     sparkle.textContent = ['✦','✨','⭐'][Math.floor(Math.random() * 3)];
@@ -165,10 +177,11 @@
     move();
   }
 
+  // continuously create sparkles
   setInterval(createSparkle, 150);
-  </script>
 </body>
 </html>
+
 
 
 
