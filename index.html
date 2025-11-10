@@ -39,42 +39,6 @@
     font-size: clamp(1rem, 3vw, 1.5rem);
   }
 
-  #milestones {
-    margin-top: 1.5rem;
-    background: rgba(255,255,255,0.3);
-    border-radius: 1rem;
-    padding: 1rem 2rem;
-    box-shadow: 0 0 10px rgba(255,182,193,0.3);
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    width: 90%;
-    max-width: 400px;
-  }
-
-  #milestones h2 {
-    margin-bottom: 0.5rem;
-    color: #C2185B;
-  }
-
-  .milestone-item {
-    margin-bottom: 0.6rem;
-    text-align: left;
-  }
-
-  .progress {
-    background: rgba(255,255,255,0.5);
-    height: 8px;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 4px;
-  }
-
-  .progress-bar {
-    height: 100%;
-    width: 0%;
-    border-radius: 10px;
-    background: linear-gradient(90deg, #ff69b4, #ffb6c1);
-    transition: width 1s ease;
-  }
  /* --- STAR SPARKLES --- */
   .sparkle {
     position: fixed;
@@ -107,16 +71,8 @@
   <div id="counter"></div>
   <p> 💖Em yêu ơi, em thử nhắn vào màn hình đi 😘💞</p>
 
-   <!-- Milestones -->
-  <div id="milestones">
-    <h2>🌸 Cột mốc sắp tới 🌸</h2>
-    <ul id="milestoneList" style="list-style:none; padding:0;"></ul>
-  </div>
-  
   <script>
     const startDate = new Date("2025-09-26T23:30:00+07:00"); // Change your start date here
-    let lastMilestone = 0;
-    const milestones = [3, 6, 9, 12, 18, 24, 36];
     
    function updateCounter() {
   const now = new Date();
@@ -143,89 +99,6 @@
 }
     setInterval(updateCounter, 1000);
     updateCounter();
-    updateProgressBars(now);
-
-    // ===================== MILESTONE CELEBRATION =====================
-  function showMilestone(months) {
-    const msg = document.createElement("div");
-    msg.textContent = `💖 Chúc mừng kỷ niệm ${months === 12 ? '1 năm' : months + ' tháng'} yêu nhau! 💖`;
-    msg.style.position = "fixed";
-    msg.style.top = "50%";
-    msg.style.left = "50%";
-    msg.style.transform = "translate(-50%, -50%)";
-    msg.style.background = "rgba(255,255,255,0.9)";
-    msg.style.padding = "20px 40px";
-    msg.style.borderRadius = "20px";
-    msg.style.fontSize = "1.5rem";
-    msg.style.boxShadow = "0 0 20px rgba(255,105,180,0.7)";
-    msg.style.zIndex = "9999";
-    msg.style.animation = "fadeInOut 5s ease forwards";
-    document.body.appendChild(msg);
-
-    for (let i = 0; i < 30; i++) {
-      const heart = document.createElement("div");
-      heart.textContent = "💞";
-      heart.style.position = "fixed";
-      heart.style.left = Math.random() * window.innerWidth + "px";
-      heart.style.top = Math.random() * window.innerHeight + "px";
-      heart.style.fontSize = Math.random() * 20 + 20 + "px";
-      heart.style.opacity = 1;
-      heart.style.pointerEvents = "none";
-      document.body.appendChild(heart);
-
-      let y = parseFloat(heart.style.top);
-      let x = parseFloat(heart.style.left);
-      const driftX = (Math.random() - 0.5) * 2;
-      const speedY = Math.random() * 1 + 0.5;
-      let opacity = 1;
-
-      function float() {
-        y -= speedY;
-        x += driftX;
-        opacity -= 0.01;
-        heart.style.top = y + "px";
-        heart.style.left = x + "px";
-        heart.style.opacity = opacity;
-        if (opacity > 0) requestAnimationFrame(float);
-        else heart.remove();
-      }
-      float();
-    }
-    setTimeout(() => msg.remove(), 5000);
-  }
-
-  // ===================== UPCOMING MILESTONES =====================
-  function renderMilestones() {
-    const list = document.getElementById("milestoneList");
-    list.innerHTML = "";
-    milestones.forEach(m => {
-      const date = new Date(startDate);
-      date.setMonth(startDate.getMonth() + m);
-      const formatted = date.toLocaleDateString("vi-VN", {
-        year: "numeric", month: "2-digit", day: "2-digit"
-      });
-
-      const li = document.createElement("li");
-      li.className = "milestone-item";
-      li.innerHTML = `
-        💫 ${m === 12 ? "1 năm" : m + " tháng"} – ${formatted}
-        <div class="progress"><div class="progress-bar" id="bar-${m}"></div></div>
-      `;
-      list.appendChild(li);
-    });
-  }
-
-  function updateProgressBars(now) {
-    milestones.forEach(m => {
-      const milestoneDate = new Date(startDate);
-      milestoneDate.setMonth(startDate.getMonth() + m);
-      const total = milestoneDate - startDate;
-      const elapsed = now - startDate;
-      let progress = Math.min((elapsed / total) * 100, 100);
-      const bar = document.getElementById(`bar-${m}`);
-      if (bar) bar.style.width = progress + "%";
-    });
-  }
     
    // Magical floating kisses
     document.addEventListener('click', (e) => {
@@ -306,10 +179,10 @@
   }
 
   setInterval(createSparkle, 150);
-  renderMilestones();
 </script>
 </body>
 </html>
+
 
 
 
