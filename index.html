@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Journey 💕</title>
+<title>Love Journey 💞</title>
 <style>
   body {
     font-family: "Poppins", sans-serif;
@@ -37,6 +37,7 @@
 
   p {
     font-size: clamp(1rem, 3vw, 1.5rem);
+    margin-bottom: 4rem;
   }
 
   /* Floating hearts for each person */
@@ -62,11 +63,12 @@
 
   /* Shared main heart */
   #sharedHeart {
-    position: absolute;
+    position: relative;
     font-size: 5rem;
     text-shadow: 0 0 25px rgba(255,0,0,0.6);
     animation: heartbeat 2s infinite ease-in-out;
-    z-index: -1;
+    margin-top: -2rem;
+    transition: transform 0.4s ease, text-shadow 0.4s ease;
   }
 
   @keyframes heartbeat {
@@ -76,7 +78,7 @@
     75% { transform: scale(1.1); }
   }
 
-  /* Sparkles (stars) */
+  /* Sparkles */
   .sparkle {
     position: fixed;
     color: #fff;
@@ -95,6 +97,17 @@
     from { transform: scale(0.7) rotate(0deg); opacity: 0.5; }
     to { transform: scale(1.4) rotate(45deg); opacity: 1; }
   }
+
+  /* Love drops */
+  .drop {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0.9;
+    pointer-events: none;
+    filter: blur(1px);
+  }
 </style>
 </head>
 <body>
@@ -102,16 +115,16 @@
   <div id="counter"></div>
   <p>💖Em yêu ơi, em thử nhắn vào màn hình đi 😘💞</p>
 
-  <!-- Floating personal hearts -->
-  <div class="heart" id="hisHeart" style="left:12%; top:60%;">
+  <!-- Shared heart in the middle -->
+  <div id="sharedHeart">❤️</div>
+
+  <!-- Two personal hearts -->
+  <div class="heart" id="hisHeart" style="left:12%; bottom:15%;">
     💙<span>Vien Chanh Lien<br>28.08.1997</span>
   </div>
-  <div class="heart" id="herHeart" style="right:12%; top:60%;">
+  <div class="heart" id="herHeart" style="right:12%; bottom:15%;">
     💖<span>Le Thi Thien Ngan<br>26.08.2005</span>
   </div>
-
-  <!-- Shared love heart -->
-  <div id="sharedHeart">❤️</div>
 
 <script>
   const startDate = new Date("2025-09-26T23:30:00+07:00");
@@ -164,24 +177,12 @@
     parts.push(`${minutes} phút`);
     parts.push(`${seconds} giây`);
     document.getElementById("counter").textContent = parts.join(', ');
-
-    updateHeartGrowth(now);
-  }
-
-  // The shared heart grows and slows its pulse over time
-  function updateHeartGrowth(now) {
-    const sharedHeart = document.getElementById("sharedHeart");
-    const daysTogether = (now - startDate) / (1000 * 60 * 60 * 24);
-    const scale = 1 + Math.log10(1 + daysTogether / 30) * 0.5;
-    const duration = 2 + Math.min(5, Math.log10(1 + daysTogether / 100));
-    sharedHeart.style.transform = `scale(${scale})`;
-    sharedHeart.style.animationDuration = `${duration}s`;
   }
 
   setInterval(updateCounter, 1000);
   updateCounter();
 
-  // Sparkles
+  // === Floating sparkles ===
   function createSparkle() {
     const sparkle = document.createElement('div');
     sparkle.className = 'sparkle';
@@ -206,29 +207,68 @@
     move();
   }
 
-  setInterval(createSparkle, 150);
+  setInterval(createSparkle, 200);
 
-  // Floating kisses
-  document.addEventListener('click', (e) => {
-    const kiss = document.createElement('div');
-    kiss.textContent = '💋';
-    kiss.style.position = 'fixed';
-    kiss.style.left = e.clientX + 'px';
-    kiss.style.top = e.clientY + 'px';
-    kiss.style.fontSize = '25px';
-    kiss.style.pointerEvents = 'none';
-    kiss.style.opacity = 1;
-    document.body.appendChild(kiss);
+  // === Love drops animation ===
+  const sharedHeart = document.getElementById("sharedHeart");
+  const hisHeart = document.getElementById("hisHeart");
+  const herHeart = document.getElementById("herHeart");
 
-    let speedY = 1;
+  let heartEnergy = 0;
+
+  function createDrop(fromElem, color) {
+    const drop = document.createElement('div');
+    drop.className = 'drop';
+    drop.style.background = color;
+
+    const fromRect = fromElem.getBoundingClientRect();
+    const toRect = sharedHeart.getBoundingClientRect();
+
+    const startX = fromRect.left + fromRect.width / 2;
+    const startY = fromRect.top;
+    const endX = toRect.left + toRect.width / 2;
+    const endY = toRect.top + toRect.height / 2;
+
+    drop.style.left = startX + 'px';
+    drop.style.top = startY + 'px';
+    document.body.appendChild(drop);
+
+    const steps = 50;
+    let i = 0;
     function animate() {
-      kiss.style.top = parseFloat(kiss.style.top) - speedY + 'px';
-      kiss.style.opacity -= 0.02;
-      if (kiss.style.opacity > 0) requestAnimationFrame(animate);
-      else kiss.remove();
+      i++;
+      const t = i / steps;
+      const x = startX + (endX - startX) * t + Math.sin(t * 3.14) * 30 * (Math.random() - 0.5);
+      const y = startY + (endY - startY) * t;
+      drop.style.left = x + 'px';
+      drop.style.top = y + 'px';
+      drop.style.opacity = 1 - t;
+
+      if (i < steps) requestAnimationFrame(animate);
+      else {
+        drop.remove();
+        chargeHeart(); // Feed energy into shared heart
+      }
     }
     animate();
-  });
+  }
+
+  // Glow and grow the heart when energy increases
+  function chargeHeart() {
+    heartEnergy = Math.min(heartEnergy + 1, 50);
+    const scale = 1 + heartEnergy / 80;
+    const glow = 0.5 + heartEnergy / 40;
+    sharedHeart.style.transform = `scale(${scale})`;
+    sharedHeart.style.textShadow = `0 0 ${20 + heartEnergy}px rgba(255,0,0,${glow})`;
+    setTimeout(() => {
+      sharedHeart.style.transform = 'scale(1)';
+      sharedHeart.style.textShadow = '0 0 25px rgba(255,0,0,0.6)';
+      heartEnergy = Math.max(heartEnergy - 0.5, 0);
+    }, 600);
+  }
+
+  setInterval(() => createDrop(hisHeart, "#4FC3F7"), 1200);
+  setInterval(() => createDrop(herHeart, "#F48FB1"), 1200);
 </script>
 </body>
 </html>
