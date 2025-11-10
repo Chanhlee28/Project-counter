@@ -121,42 +121,78 @@
   <script>
   const startDate = new Date("2025-09-26T23:30:00+07:00"); // Change your start date here
     
-  function updateCounter() {
-  const now = new Date();
-  
-  // Calculate total months difference
-  let totalMonths = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
-  const monthStart = new Date(startDate);
-  monthStart.setMonth(startDate.getMonth() + totalMonths);
-  
-  // Adjust if this month's date not reached yet
-  if (now < monthStart) {
-    totalMonths--;
-    monthStart.setMonth(startDate.getMonth() + totalMonths);
-  }
-  
-  // Derive years and remaining months
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
-
-  // Calculate time since that month start
-  const diff = now - monthStart;
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
-
-  // Display formatted time
-  let text = "";
-  if (years > 0) text += `${years} năm, `;
-  text += `${months} tháng, ${days} ngày, ${hours} giờ, ${minutes} phút, ${seconds} giây`;
-
-  document.getElementById("counter").textContent = text;
-
-  updateJourney(now, years, months);
+  /* helper: return number of days in a given month/year */
+function daysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
 }
-setInterval(updateCounter, 1000);
-updateCounter();
+
+/* helper: add calendar months to a date, preserving "day" as much as possible:
+   e.g. addMonths(2025-01-31, 1) -> 2025-02-28 (or 29), not Mar 3 */
+function addMonths(origDate, months) {
+  const d = new Date(origDate.getTime());
+  const origDay = d.getDate();
+  const targetMonth = d.getMonth() + months;
+  d.setMonth(targetMonth);
+
+  // if month rolled over (e.g., from Jan 31 to Mar 03), adjust to last day of target
+  if (d.getDate() < origDay) {
+    const y = d.getFullYear();
+    const m = d.getMonth();
+    d.setDate(daysInMonth(y, m));
+  }
+  return d;
+}
+
+/* Main robust updateCounter */
+function updateCounter() {
+  const now = new Date();
+  // 1) compute full years since startDate (calendar years)
+  let years = now.getFullYear() - startDate.getFullYear();
+
+  // try the anniversary at that number of years
+  let yearAnchor = new Date(startDate.getTime());
+  yearAnchor.setFullYear(startDate.getFullYear() + years);
+
+  if (now < yearAnchor) {
+    years--;
+    yearAnchor = new Date(startDate.getTime());
+    yearAnchor.setFullYear(startDate.getFullYear() + years);
+  }
+
+  // 2) compute full months after the last anniversary
+  // use addMonths anchored at yearAnchor to avoid month-overflow surprises
+  let months = 0;
+  let monthAnchor = new Date(yearAnchor.getTime());
+
+  // fast approximate months (may be off by 1), then adjust:
+  months = (now.getFullYear() - monthAnchor.getFullYear()) * 12 + (now.getMonth() - monthAnchor.getMonth());
+
+  // compute monthAnchor precisely = yearAnchor + months
+  monthAnchor = addMonths(yearAnchor, months);
+
+  if (now < monthAnchor) { // if we overshot, step back one month
+    months--;
+    monthAnchor = addMonths(yearAnchor, months);
+  }
+
+  // 3) remaining time from monthAnchor to now -> days/hours/minutes/seconds
+  const diffMs = now - monthAnchor;
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
+  const seconds = Math.floor((diffMs / 1000) % 60);
+
+  // display: if >=1 year, show years; otherwise omit years
+  let parts = [];
+  if (years > 0) parts.push(`${years} năm`);
+  parts.push(`${months} tháng`);
+  parts.push(`${days} ngày`);
+  parts.push(`${hours} giờ`);
+  parts.push(`${minutes} phút`);
+  parts.push(`${seconds} giây`);
+
+  document.getElementById("counter").textContent = parts.join(', ');
+}
 
 
     function updateJourney(now) {
@@ -266,6 +302,7 @@ updateCounter();
 </script>
 </body>
 </html>
+
 
 
 
