@@ -119,34 +119,45 @@
   </div>
 
   <script>
-    const startDate = new Date("2025-09-26T23:30:00+07:00"); // Change your start date here
+  const startDate = new Date("2025-09-26T23:30:00+07:00"); // Change your start date here
     
   function updateCounter() {
   const now = new Date();
-  let months = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
   
-  // Find the date when that full number of months was reached
+  // Calculate total months difference
+  let totalMonths = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
   const monthStart = new Date(startDate);
-  monthStart.setMonth(startDate.getMonth() + months);
-
-  // If we haven't reached that same day yet, step back one month
+  monthStart.setMonth(startDate.getMonth() + totalMonths);
+  
+  // Adjust if this month's date not reached yet
   if (now < monthStart) {
-    months--;
-    monthStart.setMonth(startDate.getMonth() + months);
+    totalMonths--;
+    monthStart.setMonth(startDate.getMonth() + totalMonths);
   }
+  
+  // Derive years and remaining months
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
 
+  // Calculate time since that month start
   const diff = now - monthStart;
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((diff / (1000 * 60)) % 60);
   const seconds = Math.floor((diff / 1000) % 60);
 
-  document.getElementById("counter").textContent =
-    `${months} tháng, ${days} ngày, ${hours} giờ, ${minutes} phút, ${seconds} giây`;
-  updateJourney(now);  
+  // Display formatted time
+  let text = "";
+  if (years > 0) text += `${years} năm, `;
+  text += `${months} tháng, ${days} ngày, ${hours} giờ, ${minutes} phút, ${seconds} giây`;
+
+  document.getElementById("counter").textContent = text;
+
+  updateJourney(now, years, months);
 }
-    setInterval(updateCounter, 1000);
-    updateCounter();
+setInterval(updateCounter, 1000);
+updateCounter();
+
 
     function updateJourney(now) {
   const journeyBar = document.getElementById("journeyBar");
@@ -255,6 +266,7 @@
 </script>
 </body>
 </html>
+
 
 
 
