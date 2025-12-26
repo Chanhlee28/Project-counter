@@ -191,32 +191,7 @@
 
   setInterval(updateCounter, 1000);
   updateCounter();
-  
-const meetDate = new Date("2025-11-20T20:00:00+07:00");
-
-function updateMeetCounter() {
-  const now = new Date();
-  let diff = meetDate - now;
-
-  if (diff <= 0) {
-    document.getElementById("meetCounter").textContent =
-      "💘 Anh đang ở bên em rồi 💞";
-    return;
-  }
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
-
-  document.getElementById("meetCounter").innerHTML =
-    `⏳ Còn <b>${days} ngày, ${hours} giờ, ${minutes} phút, ${seconds} giây</b><br>
-     là anh gặp em baby oiii 💖`;
-}
-
-setInterval(updateMeetCounter, 1000);
-updateMeetCounter(); 
-
+   
 
  // Magical floating kisses
     document.addEventListener('click', (e) => {
@@ -356,6 +331,7 @@ updateMeetCounter();
 </script>
 </body>
 </html>
+
 
 
 
